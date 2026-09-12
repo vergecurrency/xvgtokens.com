@@ -1,34 +1,50 @@
+import { ChevronDown, Palette } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { WalletConnectTrigger } from "@/components/WalletConnectTrigger";
+import type { SiteTheme } from "@/App";
 import type { TokenDefinition } from "@/data/tokens";
 
 type SiteHeaderProps = {
   currentPath: string;
   tokens: TokenDefinition[];
+  theme: SiteTheme;
+  onThemeChange: (theme: SiteTheme) => void;
   onNavigate: (path: string) => void;
 };
 
-export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps) {
+const themeOptions: Array<{ label: string; value: SiteTheme }> = [
+  { label: "Neon Orbit", value: "neon-orbit" },
+  { label: "Sunset Grid", value: "sunset-grid" },
+  { label: "Classic Arcade", value: "classic-arcade" },
+  { label: "Terminal", value: "terminal" },
+];
+
+export function SiteHeader({ currentPath, tokens, theme, onThemeChange, onNavigate }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [farmMenuOpen, setFarmMenuOpen] = useState(false);
   const [chainMenuOpen, setChainMenuOpen] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const farmMenuRef = useRef<HTMLDivElement | null>(null);
   const chainMenuRef = useRef<HTMLDivElement | null>(null);
+  const themeMenuRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const farmMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const chainMenuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const themeMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const activeToken = tokens.find((token) => `/${token.slug}` === currentPath) ?? null;
   const farmTokens = tokens.filter((token) => token.farmSlug);
   const isPortfolioRoute = currentPath === "/portfolio";
   const isSwapRoute = currentPath === "/swap";
   const isGamesRoute = currentPath === "/games";
   const isUpdatesRoute = currentPath === "/updates";
+  const themeLabel = themeOptions.find((option) => option.value === theme)?.label ?? "Neon Orbit";
 
   function closeAllMenus() {
     setMenuOpen(false);
     setFarmMenuOpen(false);
     setChainMenuOpen(false);
+    setThemeMenuOpen(false);
   }
 
   function toggleFarmMenu() {
@@ -36,6 +52,7 @@ export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps)
       const nextOpen = !open;
       setMenuOpen(false);
       setChainMenuOpen(false);
+      setThemeMenuOpen(false);
       return nextOpen;
     });
   }
@@ -45,6 +62,7 @@ export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps)
       const nextOpen = !open;
       setMenuOpen(false);
       setFarmMenuOpen(false);
+      setThemeMenuOpen(false);
       return nextOpen;
     });
   }
@@ -52,6 +70,17 @@ export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps)
   function toggleTokenMenu() {
     setMenuOpen((open) => {
       const nextOpen = !open;
+      setFarmMenuOpen(false);
+      setChainMenuOpen(false);
+      setThemeMenuOpen(false);
+      return nextOpen;
+    });
+  }
+
+  function toggleThemeMenu() {
+    setThemeMenuOpen((open) => {
+      const nextOpen = !open;
+      setMenuOpen(false);
       setFarmMenuOpen(false);
       setChainMenuOpen(false);
       return nextOpen;
@@ -97,6 +126,10 @@ export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps)
 
       if (!chainMenuRef.current?.contains(event.target as Node)) {
         setChainMenuOpen(false);
+      }
+
+      if (!themeMenuRef.current?.contains(event.target as Node)) {
+        setThemeMenuOpen(false);
       }
     }
 
@@ -255,6 +288,40 @@ export function SiteHeader({ currentPath, tokens, onNavigate }: SiteHeaderProps)
           >
             Updates
           </button>
+          <div className="site-nav__menu" ref={themeMenuRef}>
+            <button
+              ref={themeMenuButtonRef}
+              type="button"
+              className={`site-nav__link site-theme-toggle ${themeMenuOpen ? "is-active" : ""}`}
+              aria-label={`Theme menu. Current theme: ${themeLabel}.`}
+              aria-expanded={themeMenuOpen}
+              onClick={toggleThemeMenu}
+            >
+              <Palette className="site-theme-toggle__icon" aria-hidden="true" />
+              <span>{themeLabel}</span>
+              <ChevronDown className="site-theme-toggle__chevron" aria-hidden="true" />
+            </button>
+            {themeMenuOpen ? (
+              <div className="site-nav__popover site-theme-menu" style={getPopoverStyle(themeMenuButtonRef)}>
+                {themeOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`site-nav__token site-theme-menu__option ${
+                      option.value === theme ? "is-active" : ""
+                    }`}
+                    onClick={() => {
+                      onThemeChange(option.value);
+                      closeAllMenus();
+                    }}
+                  >
+                    <span className={`site-theme-menu__swatch site-theme-menu__swatch--${option.value}`} />
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
         </nav>
         <div className="site-header__wallet">
           <WalletConnectTrigger />

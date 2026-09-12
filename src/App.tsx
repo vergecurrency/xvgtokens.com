@@ -12,12 +12,15 @@ import { FarmProvider } from "@/lib/farm-context";
 import { farmConfigs, type FarmSlug } from "@/lib/farms";
 import { tokenOrder, tokensBySlug, type TokenSlug } from "@/data/tokens";
 
+export type SiteTheme = "neon-orbit" | "sunset-grid" | "classic-arcade" | "terminal";
+
 const HOME_ROUTE = "/";
 const PORTFOLIO_ROUTE = "/portfolio";
 const SWAP_ROUTE = "/swap";
 const GAMES_ROUTE = "/games";
 const UPDATES_ROUTE = "/updates";
 const TETRIS_ROUTE = "/games/tetris";
+const THEME_STORAGE_KEY = "xvgtokens-theme";
 
 function normalizePath(pathname: string) {
   const normalized = pathname.replace(/\/+$/, "") || HOME_ROUTE;
@@ -53,6 +56,20 @@ function getTokenSlugFromPath(pathname: string): TokenSlug | null {
   return tokensBySlug[slug] ? slug : null;
 }
 
+function getStoredTheme(): SiteTheme {
+  if (typeof window === "undefined") {
+    return "neon-orbit";
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+  return storedTheme === "sunset-grid" ||
+    storedTheme === "classic-arcade" ||
+    storedTheme === "terminal"
+    ? storedTheme
+    : "neon-orbit";
+}
+
 export default function App() {
   const [pathname, setPathname] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -68,7 +85,14 @@ export default function App() {
 
     return normalizePath(window.location.pathname);
   });
+  const [theme, setTheme] = useState<SiteTheme>(getStoredTheme);
   const tokens = tokenOrder.map((slug) => tokensBySlug[slug]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.body.dataset.theme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     const activeTokenSlug = getTokenSlugFromPath(pathname);
@@ -162,6 +186,8 @@ export default function App() {
       <SiteHeader
         currentPath={pathname}
         tokens={tokens}
+        theme={theme}
+        onThemeChange={setTheme}
         onNavigate={navigate}
       />
       {isPortfolioRoute ? (
