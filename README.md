@@ -23,7 +23,6 @@ Optimism ($XVGOPT)<br>
 Cronos ($XVGCRO)<br>
 Mantle ($XVGMNT)<br>
 World ($XVGWORLD)<br>
-Blast ($XVGBLAST)<br>
 Bera  ($XVGBERA)<br>
 Gnosis ($XVGGNOSIS)<br>
 Hemi ($XVGHEMI)<br>

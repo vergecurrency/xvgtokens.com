@@ -31,7 +31,6 @@ export type TokenSlug =
   | "xvgmnt"
   | "xvgcro"
   | "xvguni"
-  | "xvgblast"
   | "xvggnosis"
   | "xvgbera"
   | "xvgworld"
@@ -73,7 +72,6 @@ export const tokenOrder: TokenSlug[] = [
   "xvgmnt",
   "xvgcro",
   "xvguni",
-  "xvgblast",
   "xvggnosis",
   "xvgbera",
   "xvgworld",
@@ -423,30 +421,6 @@ export const tokensBySlug: Record<TokenSlug, TokenDefinition> = {
       rpcUrl: "https://mainnet.unichain.org",
       nativeSymbol: "ETH",
       explorerUrl: "https://uniscan.xyz",
-    },
-  },
-  xvgblast: {
-    slug: "xvgblast",
-    symbol: "XVGBLAST",
-    chainName: "Blast",
-    chainMenuLabel: "Blast",
-    chainWebsite: "https://blast.io/",
-    contractAddress: sharedContractAddress,
-    icon: "/images/xvgblast.png",
-    glow: "sky",
-    landingGlow: "yellow",
-    description:
-      "XVGBLAST extends the XVG-branded token network to Blast while preserving the same contract address pattern as the other tokens. That unified design simplifies recognition, deepens liquidity, and connects users to Blast's incentives and yield mechanics.",
-    links: [
-      { label: "View Explorer", href: "https://blastexplorer.io/token/0xe061Aa40Be525A13296CB4Bf69f513242349D708/contract/code?type=erc20", kind: "explorer" },
-      { label: "View on DexTools", href: "https://www.dextools.io/app/en/blast/pair-explorer/0x6d58e03afa8d4549d08a6bdad1a951eefce30c6a0aaa07a085b5f7d3ac1b50be", kind: "dex" },
-    ],
-    wallet: {
-      networkName: "Blast Mainnet",
-      chainId: "0x13e31",
-      rpcUrl: "https://rpc.blast.io",
-      nativeSymbol: "ETH",
-      explorerUrl: "https://blastexplorer.io",
     },
   },
   xvggnosis: {

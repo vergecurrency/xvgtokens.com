@@ -108,7 +108,6 @@ const networkIconsById = new Map<number, string>([
   [5000, "/images/networks/mantle.webp"],
   [25, "/images/networks/cronos.webp"],
   [130, "/images/networks/unichain.webp"],
-  [81457, "/images/networks/blast.webp"],
   [100, "/images/networks/gnosis.webp"],
   [80094, "/images/networks/berachain.webp"],
   [480, "/images/networks/worldchain.webp"],

@@ -100,7 +100,6 @@ const supportedSwapSlugs: SwapChainKey[] = [
   "xvgmnt",
   "xvgcro",
   "xvguni",
-  "xvgblast",
   "xvggnosis",
   "xvgbera",
   "xvgworld",
@@ -490,25 +489,6 @@ const swapAssetsBySlug: Record<SwapChainKey, SwapAsset[]> = {
       coingeckoId: "uniswap",
       icon: localSwapIcon("unichain"),
       address: "0x8f187aa05619a017077f5308904739877ce9ea21",
-    }),
-  ],
-  xvgblast: [
-    createAsset("xvgblast", {
-      symbol: "XVGBLAST",
-      identifier: tokensBySlug.xvgblast.contractAddress,
-      decimals: 18,
-      kind: "xvg",
-      coingeckoId: "xvgblast",
-      tokenSlug: "xvgblast",
-    }),
-    createAsset("xvgblast", {
-      symbol: "BLAST",
-      identifier: "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
-      decimals: 18,
-      kind: "governance",
-      coingeckoId: "blast",
-      icon: localSwapIcon("blast"),
-      address: "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
     }),
   ],
   xvggnosis: [
