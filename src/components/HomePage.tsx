@@ -22,6 +22,11 @@ type HomePageProps = {
 
 export function HomePage({ tokens, onNavigate }: HomePageProps) {
   const [copied, setCopied] = useState(false);
+  const tokenGridItems = [
+    ...tokens.map((token) => ({ kind: "token" as const, token })),
+    { kind: "placeholder" as const, id: "upcoming-one" },
+    { kind: "placeholder" as const, id: "upcoming-two" },
+  ];
 
   const socialIcons: Record<string, ReactNode> = {
     Discord: <MessageCircle className="h-4 w-4" />,
@@ -79,32 +84,63 @@ export function HomePage({ tokens, onNavigate }: HomePageProps) {
           </div>
         </div>
         <div className="token-grid" aria-label="XVG token network">
-          {tokens.map((token, index) => (
-            <motion.button
-              key={token.slug}
-              type="button"
-              aria-label={`Open ${token.symbol}`}
-              className={`token-orb token-orb--${token.glow}`}
-              style={
-                {
-                  "--token-landing-glow": token.landingGlow,
-                  "--token-landing-glow-secondary":
-                    token.landingGlowSecondary ?? token.landingGlow,
-                } as CSSProperties
-              }
-              data-glow-mode={token.landingGlowMode ?? "solid"}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: index * 0.035 } }}
-              onClick={() => onNavigate(`/${token.slug}`)}
-            >
-              <span className="token-orb__halo" />
-              <span className="token-orb__frame">
-                <img src={token.icon} alt="" className="token-orb__icon" />
-                <span className="token-orb__name">{token.symbol}</span>
-              </span>
-              <span className="token-orb__label">${token.symbol}</span>
-            </motion.button>
-          ))}
+          {tokenGridItems.map((item, index) => {
+            if (item.kind === "placeholder") {
+              return (
+                <motion.div
+                  key={item.id}
+                  role="listitem"
+                  aria-label="Upcoming token"
+                  className="token-orb token-orb--upcoming"
+                  style={
+                    {
+                      "--token-landing-glow": "#0f172a",
+                      "--token-landing-glow-secondary": "#67e8f9",
+                    } as CSSProperties
+                  }
+                  data-glow-mode="dual"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0, transition: { delay: index * 0.035 } }}
+                >
+                  <span className="token-orb__halo" />
+                  <span className="token-orb__frame">
+                    <span className="token-orb__mystery" aria-hidden="true">?</span>
+                    <span className="token-orb__name">UPCOMING</span>
+                  </span>
+                  <span className="token-orb__label">UPCOMING</span>
+                </motion.div>
+              );
+            }
+
+            const { token } = item;
+
+            return (
+              <motion.button
+                key={token.slug}
+                type="button"
+                aria-label={`Open ${token.symbol}`}
+                className={`token-orb token-orb--${token.glow}`}
+                style={
+                  {
+                    "--token-landing-glow": token.landingGlow,
+                    "--token-landing-glow-secondary":
+                      token.landingGlowSecondary ?? token.landingGlow,
+                  } as CSSProperties
+                }
+                data-glow-mode={token.landingGlowMode ?? "solid"}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0, transition: { delay: index * 0.035 } }}
+                onClick={() => onNavigate(`/${token.slug}`)}
+              >
+                <span className="token-orb__halo" />
+                <span className="token-orb__frame">
+                  <img src={token.icon} alt="" className="token-orb__icon" />
+                  <span className="token-orb__name">{token.symbol}</span>
+                </span>
+                <span className="token-orb__label">${token.symbol}</span>
+              </motion.button>
+            );
+          })}
         </div>
         <div className="landing-socials" aria-label="XVG social links">
           {socials.map((social) => (

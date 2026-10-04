@@ -1475,6 +1475,33 @@ body[data-view="home"] .token-grid-kicker::before {
   filter: drop-shadow(0 10px 18px rgba(2, 6, 23, 0.28));
 }
 
+.token-orb__mystery {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(5.35rem, 7.8vw, 7.5rem);
+  height: clamp(5.35rem, 7.8vw, 7.5rem);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    radial-gradient(circle at 31% 24%, rgba(255, 255, 255, 0.2), transparent 28%),
+    radial-gradient(circle at 70% 72%, rgba(34, 211, 238, 0.12), transparent 38%),
+    linear-gradient(145deg, #050505, #111827 48%, #000);
+  color: #f8fafc;
+  font-size: clamp(2.7rem, 4.9vw, 4.8rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.58),
+    0 0 24px rgba(103, 232, 249, 0.36);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.24),
+    inset 0 -18px 24px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(0, 0, 0, 0.72),
+    0 14px 24px rgba(0, 0, 0, 0.34);
+  filter: drop-shadow(0 12px 20px rgba(2, 6, 23, 0.34));
+}
+
 .token-orb__name {
   color: rgba(255, 255, 255, 0.92);
   font-size: 0.62rem;
@@ -1544,6 +1571,33 @@ body[data-view="home"] .token-grid-kicker::before {
 .token-orb--rose .token-orb__halo,
 .token-page__art--rose .token-page__art-halo {
   background: rgba(251, 113, 133, 0.4);
+}
+
+.token-orb--upcoming {
+  cursor: default;
+}
+
+.token-orb--upcoming .token-orb__frame {
+  border-color: rgba(103, 232, 249, 0.2);
+  background:
+    radial-gradient(circle at top, rgba(103, 232, 249, 0.13), transparent 42%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.97));
+}
+
+.token-orb--upcoming .token-orb__halo {
+  background:
+    radial-gradient(circle at 48% 46%, rgba(0, 0, 0, 0.72), transparent 56%),
+    radial-gradient(circle at 68% 30%, rgba(103, 232, 249, 0.26), transparent 44%),
+    radial-gradient(circle at 25% 74%, rgba(236, 72, 153, 0.18), transparent 46%);
+  opacity: 0.82;
+}
+
+.token-orb--upcoming .token-orb__label {
+  color: #e0f2fe;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 12px rgba(103, 232, 249, 0.72),
+    0 0 28px rgba(236, 72, 153, 0.4);
 }
 
 .token-orb[data-glow-mode="solid"] .token-orb__halo {
