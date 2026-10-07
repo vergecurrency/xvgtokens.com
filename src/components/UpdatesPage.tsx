@@ -11,6 +11,10 @@ function TokenMention({ children }: { children: ReactNode }) {
 
 const updates: UpdateEntry[] = [
   {
+    date: "October 7th 2026",
+    description: "Updated most xvgtokens.com backend dependencies/libraries.",
+  },
+  {
     date: "September 12th 2026",
     description: "Prepping site for game station, new arcade/terminal themes.",
   },
