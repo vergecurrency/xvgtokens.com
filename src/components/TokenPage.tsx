@@ -314,7 +314,9 @@ function writeCachedMarketChart(
 }
 
 async function addTokenToWallet(token: TokenDefinition) {
-  const wallet = window.ethereum as
+  const wallet = (window as Window & {
+    ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> };
+  }).ethereum as
     | { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> }
     | undefined;
 
