@@ -12,6 +12,11 @@ function TokenMention({ children }: { children: ReactNode }) {
 const updates: UpdateEntry[] = [
   {
     date: "October 7th 2026",
+    description:
+      "Updated the site wallet stack from RainbowKit to wagmi 3 with MetaMask Connect support. This keeps wallet connections, chain switching, and swap/farm actions on newer maintained libraries for a smoother and safer user experience.",
+  },
+  {
+    date: "October 7th 2026",
     description: "Updated most xvgtokens.com backend dependencies/libraries.",
   },
   {

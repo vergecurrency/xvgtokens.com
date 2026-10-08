@@ -1,14 +1,6 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import {
-  coinbaseWallet,
-  injectedWallet,
-  metaMaskWallet,
-  trustWallet,
-  uniswapWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
+import { coinbaseWallet, injected, metaMask, walletConnect } from "@wagmi/connectors";
 import { defineChain, fallback } from "viem";
-import { http } from "wagmi";
+import { createConfig, http } from "wagmi";
 import {
   mainnet as mainnetChain,
   arbitrum as arbitrumChain,
@@ -97,6 +89,37 @@ const chains = [
   zoraChain,
 ] as const;
 
+const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID?.trim();
+
+const connectors = [
+  injected({ shimDisconnect: true }),
+  metaMask({
+    dappMetadata: {
+      name: "XVGTokens",
+      url: "https://xvgtokens.com/",
+      iconUrl: "https://xvgtokens.com/images/favicon.ico",
+    },
+  }),
+  coinbaseWallet({
+    appName: "XVGTokens",
+    appLogoUrl: "https://xvgtokens.com/images/favicon.ico",
+  }),
+  ...(walletConnectProjectId && walletConnectProjectId !== "YOUR_WALLETCONNECT_PROJECT_ID"
+    ? [
+        walletConnect({
+          projectId: walletConnectProjectId,
+          metadata: {
+            name: "XVGTokens",
+            description: "Multi-chain XVG explorer, farms, swap, and portfolio tracker.",
+            url: "https://xvgtokens.com/",
+            icons: ["https://xvgtokens.com/images/favicon.ico"],
+          },
+          showQrModal: true,
+        }),
+      ]
+    : []),
+] as const;
+
 const transports = Object.fromEntries(
   [
     [
@@ -138,25 +161,9 @@ const transports = Object.fromEntries(
   ],
 );
 
-export const wagmiConfig = getDefaultConfig({
-  appName: "XVGTokens",
-  appDescription: "Multi-chain XVG explorer, farms, swap, and portfolio tracker.",
-  appUrl: "https://xvgtokens.com/",
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "YOUR_WALLETCONNECT_PROJECT_ID",
+export const wagmiConfig = createConfig({
   chains,
+  connectors,
   transports,
-  wallets: [
-    {
-      groupName: "Recommended",
-      wallets: [
-        metaMaskWallet,
-        uniswapWallet,
-        trustWallet,
-        coinbaseWallet,
-        walletConnectWallet,
-        injectedWallet,
-      ],
-    },
-  ],
   ssr: false,
 });

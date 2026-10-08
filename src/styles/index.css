@@ -3429,6 +3429,14 @@ body[data-view="swap"] .swap-progress__track {
   justify-content: flex-start;
 }
 
+.site-theme-menu__hint {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  color: rgba(251, 113, 133, 0.9);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
 .site-theme-menu__swatch {
   width: 1.55rem;
   height: 1.55rem;
