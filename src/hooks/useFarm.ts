@@ -7,7 +7,7 @@ import {
   type Eip1193Provider,
 } from "ethers";
 import { parseAbi, type Abi } from "viem";
-import { useAccount, useReadContracts, useSwitchChain } from "wagmi";
+import { useAccount, usePublicClient, useReadContracts, useSwitchChain, useWalletClient } from "wagmi";
 import { useFarmConfig } from "@/lib/farm-context";
 import { ERC20_ABI, REWARDS_ABI, UNISWAP_V2_PAIR_ABI } from "@/lib/abis";
 import {
@@ -29,6 +29,14 @@ const FARM_REWARDS_READ_ABI = parseAbi([
 const FARM_ERC20_READ_ABI = parseAbi([
   "function balanceOf(address account) view returns (uint256)",
   "function allowance(address owner, address spender) view returns (uint256)",
+]);
+
+const FARM_ERC20_WRITE_ABI = parseAbi([
+  "function approve(address spender, uint256 amount) returns (bool)",
+]);
+
+const FARM_REWARDS_WRITE_ABI = parseAbi([
+  "function stake(uint256 amount)",
 ]);
 
 const FARM_PAIR_READ_ABI = parseAbi([
@@ -131,10 +139,23 @@ async function waitForConfirmedTransaction(
   }
 }
 
+async function waitForViemTransaction(
+  hash: `0x${string}`,
+  publicClient: ReturnType<typeof usePublicClient> | undefined,
+) {
+  if (!publicClient) {
+    return;
+  }
+
+  await publicClient.waitForTransactionReceipt({ hash });
+}
+
 export function useFarm(): FarmState {
   const farmConfig = useFarmConfig();
   const { address, connector, chain, isConnected } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient({ chainId: farmConfig.chainId });
   const rewardsContractReady = isAddress(farmConfig.rewardsContractAddress);
   const tokenAddressReady = isAddress(farmConfig.tokenAddress);
   const quoteTokenAddressReady = isAddress(farmConfig.quoteTokenAddress);
@@ -695,7 +716,7 @@ export function useFarm(): FarmState {
       return;
     }
 
-    if (!lpWrite) {
+    if (!walletClient || !account) {
       setStatus("Connect wallet first.");
       return;
     }
@@ -703,8 +724,15 @@ export function useFarm(): FarmState {
     try {
       setBusy(true);
       setStatus("Sending LP approval...");
-      const tx = await lpWrite.approve(farmConfig.rewardsContractAddress, MaxUint256);
-      await waitForConfirmedTransaction(tx, provider);
+      const hash = await walletClient.writeContract({
+        account: account as `0x${string}`,
+        chain: chain,
+        address: farmConfig.lpTokenAddress as `0x${string}`,
+        abi: FARM_ERC20_WRITE_ABI,
+        functionName: "approve",
+        args: [farmConfig.rewardsContractAddress as `0x${string}`, MaxUint256],
+      });
+      await waitForViemTransaction(hash, publicClient);
       setStatus("LP approval confirmed.");
       await refreshData();
     } catch (error) {
@@ -712,7 +740,16 @@ export function useFarm(): FarmState {
     } finally {
       setBusy(false);
     }
-  }, [ensureFarmChain, lpWrite, refreshData]);
+  }, [
+    account,
+    chain,
+    ensureFarmChain,
+    farmConfig.lpTokenAddress,
+    farmConfig.rewardsContractAddress,
+    publicClient,
+    refreshData,
+    walletClient,
+  ]);
 
   const approveTokenForRouter = useCallback(async () => {
     if (!(await ensureFarmChain())) {
@@ -991,7 +1028,7 @@ export function useFarm(): FarmState {
       return;
     }
 
-    if (!rewardsWrite) {
+    if (!walletClient || !account) {
       setStatus("Connect wallet first.");
       return;
     }
@@ -1004,10 +1041,27 @@ export function useFarm(): FarmState {
         return;
       }
 
+      if (amount > walletLpBalance) {
+        setStatus("Insufficient wallet LP balance. Refresh balances after adding liquidity, then try Max again.");
+        return;
+      }
+
+      if (allowance < amount) {
+        setStatus("Approve your LP tokens before staking.");
+        return;
+      }
+
       setBusy(true);
       setStatus("Submitting stake transaction...");
-      const tx = await rewardsWrite.stake(amount);
-      await waitForConfirmedTransaction(tx, provider);
+      const hash = await walletClient.writeContract({
+        account: account as `0x${string}`,
+        chain: chain,
+        address: farmConfig.rewardsContractAddress as `0x${string}`,
+        abi: FARM_REWARDS_WRITE_ABI,
+        functionName: "stake",
+        args: [amount],
+      });
+      await waitForViemTransaction(hash, publicClient);
       setStatus("Stake confirmed.");
       setStakeInput("");
       await refreshData();
@@ -1016,7 +1070,19 @@ export function useFarm(): FarmState {
     } finally {
       setBusy(false);
     }
-  }, [ensureFarmChain, refreshData, rewardsWrite, stakeInput]);
+  }, [
+    account,
+    allowance,
+    chain,
+    ensureFarmChain,
+    farmConfig.lpDecimals,
+    farmConfig.rewardsContractAddress,
+    publicClient,
+    refreshData,
+    stakeInput,
+    walletClient,
+    walletLpBalance,
+  ]);
 
   const withdrawLp = useCallback(async () => {
     if (!(await ensureFarmChain())) {
