@@ -689,7 +689,12 @@ export function useFarm(): FarmState {
     setLiquidityTokenInput(tokenFromQuoteInput(value));
   }, [tokenFromQuoteInput]);
 
-  const hasApproval = allowance > 0n;
+  const requiredStakeApproval = parseInputToUnitsSafe(
+    stakeInput || "0",
+    farmConfig.lpDecimals,
+  );
+  const hasApproval =
+    requiredStakeApproval === 0n ? allowance > 0n : allowance >= requiredStakeApproval;
   const requiredTokenApproval = parseInputToUnitsSafe(
     liquidityTokenInput || "0",
     farmConfig.tokenDecimals,
@@ -1047,7 +1052,7 @@ export function useFarm(): FarmState {
       }
 
       if (allowance < amount) {
-        setStatus("Approve your LP tokens before staking.");
+        setStatus("Approve enough LP tokens for this stake amount before staking.");
         return;
       }
 
